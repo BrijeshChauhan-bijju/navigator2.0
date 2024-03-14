@@ -5,25 +5,24 @@ class MyRouteInformationParser extends RouteInformationParser<MyRoutePath> {
   @override
   Future<MyRoutePath> parseRouteInformation(RouteInformation routeInformation) async {
     final uri = Uri.parse(routeInformation.location!);
-
     if (uri.pathSegments.isEmpty) {
       return MyRoutePath.home();
-    } else if (uri.pathSegments.length == 1 && uri.pathSegments.first == 'details') {
-      // Parse additional path segments or query parameters here if needed
+    } else if (uri.pathSegments.first == 'details') {
+      final id = int.tryParse(uri.pathSegments.elementAt(1) ?? '') ?? 0;
       return MyRoutePath.details();
+    } else {
+      return MyRoutePath.unknown();
     }
-
-    // Return a default route if the path is not recognized
-    return MyRoutePath.home();
   }
 
   @override
-  RouteInformation? restoreRouteInformation(MyRoutePath path) {
-    if (path.isHome) {
+  RouteInformation? restoreRouteInformation(MyRoutePath configuration) {
+    if (configuration.isHome) {
       return RouteInformation(location: '/');
-    } else if (path.isDetails) {
+    } else if (configuration.isDetails) {
       return RouteInformation(location: '/details');
+    } else {
+      return null;
     }
-    return null;
   }
 }
